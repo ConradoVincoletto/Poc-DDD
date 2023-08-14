@@ -20,6 +20,7 @@ namespace PocDDD.Application.Services
         public async Task<ServiceResponseDTO<int>> InsertAsync(UserToInsertDTO userToInsertModel)
         {
             User user = _mapper.Map<UserToInsertDTO, User>(userToInsertModel);
+            //User user = new User(0, userToInsertModel.FirstName, userToInsertModel.LastName, userToInsertModel.Email, userToInsertModel.Password);
             await _userRespository.InsertAsync(user);
             return _mapper.Map<User, ServiceResponseDTO<int>>(user);
         }
