@@ -30,7 +30,14 @@ namespace PocDDD.API.Controllers
             {
                 return BadRequest(serviceResponseModel);
             }
-        } 
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(ServiceResponseDTO<int>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [Route("update")]
+        public async Task Update(UserDTO userDTO)
+            => await _userService.UpdateAsync(userDTO);
 
 
     }

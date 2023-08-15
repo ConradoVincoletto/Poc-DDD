@@ -33,6 +33,8 @@ namespace PocDDD.Domain.Entities
             DomainExceptionValidation.When(string.IsNullOrWhiteSpace(email), "E-mail inválido.");
 
             DomainExceptionValidation.When(string.IsNullOrWhiteSpace(password), "Senha inválida.");
+
+            DomainExceptionValidation.When(EmailValidation.ValidateEmail(email), "Formato de e-mail inválido.");
            
         }
 

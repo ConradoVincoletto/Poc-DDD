@@ -35,9 +35,11 @@ namespace PocDDD.Application.Services
             throw new NotImplementedException();
         }       
 
-        public Task<ServiceResponseDTO<bool>> UpdateAsync(UserDTO userModel)
+        public async Task<ServiceResponseDTO<bool>> UpdateAsync(UserDTO userModel)
         {
-            throw new NotImplementedException();
+            User user = _mapper.Map<UserDTO, User>(userModel);
+            await _userRespository.UpdateAsync(user);
+            return _mapper.Map<User, ServiceResponseDTO<bool>>(user);
         }
     }
 }
