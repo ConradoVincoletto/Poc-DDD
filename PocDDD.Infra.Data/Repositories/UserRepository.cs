@@ -18,6 +18,13 @@ namespace PocDDD.Infra.Data.Repositories
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
+            var response = new
+            {
+                Id = user.Id,
+                Message = $"Usuário com o {user.Id} criado com sucesso."
+            };
+
             return user;
         }
 

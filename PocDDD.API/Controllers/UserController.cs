@@ -29,7 +29,7 @@ namespace PocDDD.API.Controllers
             else
             {
                 return BadRequest(serviceResponseModel);
-            }
+            }            
         }
 
         [HttpPut]
