@@ -16,7 +16,6 @@ namespace PocDDD.Domain.Entities
         {
             Id = id;
             ValidateDomain(firstName, lastName, email, password);
-
         }       
 
         public void Update(string firstName, string lastName, string email, string password)

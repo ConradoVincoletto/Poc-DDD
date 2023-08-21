@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using PocDDD.Application.DTOs;
+using PocDDD.Application.Filters;
 using PocDDD.Application.Interfaces;
 using PocDDD.Domain.Entities;
 using PocDDD.Domain.Interfaces;
+using PocDDD.Domain.Validation;
+using System.Net;
 
 namespace PocDDD.Application.Services
 {
@@ -19,27 +22,94 @@ namespace PocDDD.Application.Services
 
         public async Task<ServiceResponseDTO<int>> InsertAsync(UserToInsertDTO userToInsertModel)
         {
-            User user = _mapper.Map<UserToInsertDTO, User>(userToInsertModel);
-            //User user = new User(0, userToInsertModel.FirstName, userToInsertModel.LastName, userToInsertModel.Email, userToInsertModel.Password);
-            await _userRespository.InsertAsync(user);
-            return _mapper.Map<User, ServiceResponseDTO<int>>(user);
-        }
-
-        public Task<ServiceResponseDTO<bool>> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ServiceResponseDTO<List<UserDTO>>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }       
+            ServiceResponseDTO<int> serviceResponseDTO = new ServiceResponseDTO<int>();
+            try
+            {
+                User user = _mapper.Map<UserToInsertDTO, User>(userToInsertModel);
+                user = await _userRespository.InsertAsync(user);
+                serviceResponseDTO.StatusCode = HttpStatusCode.Created;
+                serviceResponseDTO.Data = user.Id;
+            }
+            catch (Exception ex)
+            {
+                serviceResponseDTO = new ServiceResponseDTO<int>(ex);
+            }
+            return serviceResponseDTO;
+ 
+        }            
 
         public async Task<ServiceResponseDTO<bool>> UpdateAsync(UserDTO userModel)
         {
-            User user = _mapper.Map<UserDTO, User>(userModel);
-            await _userRespository.UpdateAsync(user);
-            return _mapper.Map<User, ServiceResponseDTO<bool>>(user);
+            ServiceResponseDTO<bool> serviceResponseDTO = new ServiceResponseDTO<bool>();
+            try
+            {
+                User user = _mapper.Map<User>(userModel);
+                bool result =  await _userRespository.UpdateAsync(user);
+                serviceResponseDTO.StatusCode = HttpStatusCode.OK;
+                serviceResponseDTO.Data = result;               
+
+            }
+            catch(DomainExceptionValidation ex)
+            {
+                serviceResponseDTO = new ServiceResponseDTO<bool>(HttpStatusCode.UnprocessableEntity);
+                serviceResponseDTO.Message= ex.GetBaseException().Message;
+            }
+            catch (Exception ex)
+            {
+                serviceResponseDTO = new ServiceResponseDTO<bool>(ex);
+            }
+            return serviceResponseDTO;
+        }
+
+        public async Task<ServiceResponseDTO<List<UserDTO>>> GetAllAsync(UserFilter userFilter)
+        {
+            ServiceResponseDTO<List<UserDTO>> serviceResponseDTO = new ServiceResponseDTO<List<UserDTO>>(); 
+            try
+            {
+                List<User> users = await _userRespository.GetAllAsync(userFilter.Id, userFilter.FirstName, userFilter.LastName);
+                List<UserDTO> userDTOs = _mapper.Map<List<UserDTO>>(users);
+                if(userDTOs == null || userDTOs.Count == 0)
+                {
+                    serviceResponseDTO = new ServiceResponseDTO<List<UserDTO>>(HttpStatusCode.NotFound);
+                }
+                else
+                {
+                    serviceResponseDTO.Data = userDTOs;
+                }
+            }            
+            catch (Exception ex)
+            {
+                serviceResponseDTO = new ServiceResponseDTO<List<UserDTO>>(ex);
+            }
+            return serviceResponseDTO;
+        }
+
+        public async Task<ServiceResponseDTO<UserDTO>> GetById(int id)
+        {
+            ServiceResponseDTO<UserDTO> serviceResponseDTO = new ServiceResponseDTO<UserDTO>();
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                serviceResponseDTO = new ServiceResponseDTO<UserDTO>(ex);
+            }
+            return serviceResponseDTO;
+        }
+
+        public async Task<ServiceResponseDTO<bool>> DeleteAsync(int id)
+        {
+            ServiceResponseDTO<bool> serviceResponseDTO = new ServiceResponseDTO<bool>();
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                serviceResponseDTO = new ServiceResponseDTO<bool>(ex);
+            }
+            return serviceResponseDTO;
         }
     }
 }

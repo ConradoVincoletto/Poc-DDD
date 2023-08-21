@@ -1,4 +1,4 @@
-﻿namespace PocDDD.Application.DTOs
+﻿namespace PocDDD.Application.Pagination
 {
     public class PaginationDTO
     {
