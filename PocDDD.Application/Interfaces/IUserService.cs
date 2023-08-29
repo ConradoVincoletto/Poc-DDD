@@ -9,6 +9,7 @@ namespace PocDDD.Application.Interfaces
         Task<ServiceResponseDTO<bool>> UpdateAsync(UserDTO userModel);
         Task<ServiceResponseDTO<bool>> DeleteAsync(int id);
         Task<ServiceResponseDTO<List<UserDTO>>> GetAllAsync(UserFilter userFilter);
-        Task<ServiceResponseDTO<UserDTO>> GetById(int id);
+        Task<ServiceResponseDTO<UserDTO>> GetByIdAsync(int id);
+        Task<ServiceResponseDTO<string>> LoginAsync(UserLoginDTO userLoginDTO);
     }
 }

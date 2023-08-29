@@ -35,8 +35,8 @@ namespace PocDDD.Application.Services
                 serviceResponseDTO = new ServiceResponseDTO<int>(ex);
             }
             return serviceResponseDTO;
- 
-        }            
+
+        }
 
         public async Task<ServiceResponseDTO<bool>> UpdateAsync(UserDTO userModel)
         {
@@ -44,15 +44,15 @@ namespace PocDDD.Application.Services
             try
             {
                 User user = _mapper.Map<User>(userModel);
-                bool result =  await _userRespository.UpdateAsync(user);
+                bool result = await _userRespository.UpdateAsync(user);
                 serviceResponseDTO.StatusCode = HttpStatusCode.OK;
-                serviceResponseDTO.Data = result;               
+                serviceResponseDTO.Data = result;
 
             }
-            catch(DomainExceptionValidation ex)
+            catch (DomainExceptionValidation ex)
             {
                 serviceResponseDTO = new ServiceResponseDTO<bool>(HttpStatusCode.UnprocessableEntity);
-                serviceResponseDTO.Message= ex.GetBaseException().Message;
+                serviceResponseDTO.Message = ex.GetBaseException().Message;
             }
             catch (Exception ex)
             {
@@ -63,12 +63,12 @@ namespace PocDDD.Application.Services
 
         public async Task<ServiceResponseDTO<List<UserDTO>>> GetAllAsync(UserFilter userFilter)
         {
-            ServiceResponseDTO<List<UserDTO>> serviceResponseDTO = new ServiceResponseDTO<List<UserDTO>>(); 
+            ServiceResponseDTO<List<UserDTO>> serviceResponseDTO = new ServiceResponseDTO<List<UserDTO>>();
             try
             {
                 List<User> users = await _userRespository.GetAllAsync(userFilter.Id, userFilter.FirstName, userFilter.LastName);
                 List<UserDTO> userDTOs = _mapper.Map<List<UserDTO>>(users);
-                if(userDTOs == null || userDTOs.Count == 0)
+                if (userDTOs == null || userDTOs.Count == 0)
                 {
                     serviceResponseDTO = new ServiceResponseDTO<List<UserDTO>>(HttpStatusCode.NotFound);
                 }
@@ -76,7 +76,7 @@ namespace PocDDD.Application.Services
                 {
                     serviceResponseDTO.Data = userDTOs;
                 }
-            }            
+            }
             catch (Exception ex)
             {
                 serviceResponseDTO = new ServiceResponseDTO<List<UserDTO>>(ex);
@@ -84,12 +84,22 @@ namespace PocDDD.Application.Services
             return serviceResponseDTO;
         }
 
-        public async Task<ServiceResponseDTO<UserDTO>> GetById(int id)
+        public async Task<ServiceResponseDTO<UserDTO>> GetByIdAsync(int id)
         {
             ServiceResponseDTO<UserDTO> serviceResponseDTO = new ServiceResponseDTO<UserDTO>();
             try
             {
-                
+                User user = await _userRespository.GetByIdAsync(id);
+                if (user == null || user.Id == 0)
+                {
+                    serviceResponseDTO = new ServiceResponseDTO<UserDTO>(HttpStatusCode.NotFound);
+                }
+                else
+                {
+                    UserDTO userDTO = _mapper.Map<UserDTO>(user);
+                    serviceResponseDTO.Data = userDTO;
+                }
+
             }
             catch (Exception ex)
             {
@@ -110,6 +120,11 @@ namespace PocDDD.Application.Services
                 serviceResponseDTO = new ServiceResponseDTO<bool>(ex);
             }
             return serviceResponseDTO;
+        }
+
+        public Task<ServiceResponseDTO<string>> LoginAsync(UserLoginDTO userLoginDTO)
+        {
+            throw new NotImplementedException();
         }
     }
 }
