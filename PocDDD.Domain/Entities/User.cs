@@ -37,11 +37,23 @@ namespace PocDDD.Domain.Entities
            
         }
 
+        //public byte[] CreatePasswordHash() 
+        //{
+        //    return new byte[];
+        //}
+
+        //public byte[] CreatePasswordSalt()
+        //{
+
+        //}
+
+
         public int Id { get; private set; }
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string Email { get; private set; }
-        public string Password { get; private set; }
+        public byte[] PasswordHash { get; private set; }
+        public byte[] PasswordSalt { get; set; }
     }
 
 
