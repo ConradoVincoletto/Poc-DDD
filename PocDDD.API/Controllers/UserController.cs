@@ -33,7 +33,7 @@ namespace PocDDD.API.Controllers
         [Route("get/{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            ServiceResponseDTO<UserDTO> serviceResponseDTO = await _userService.GetById(id);
+            ServiceResponseDTO<UserDTO> serviceResponseDTO = await _userService.GetByIdAsync(id);
             return StatusCode((int)serviceResponseDTO.StatusCode, serviceResponseDTO);
         }
 
