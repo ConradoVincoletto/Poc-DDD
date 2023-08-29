@@ -6,8 +6,8 @@ namespace PocDDD.Domain.Interfaces
     {
         Task<User> InsertAsync(User user);
         Task<bool> UpdateAsync(User user);
-        Task<List<User>> GetAllAsync(int id, string firstName, string lastName);
-        Task<User> GetById(int id);
+        Task<List<User>> GetAllAsync(int? id, string? firstName, string? lastName);
+        Task<User> GetByIdAsync(int id);
         Task<bool> DeleteAsync(User user);
     }
 }

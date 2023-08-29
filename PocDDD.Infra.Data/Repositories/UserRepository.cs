@@ -37,7 +37,7 @@ namespace PocDDD.Infra.Data.Repositories
             return result == 1;
         }
 
-        public async Task<List<User>> GetAllAsync(int id, string firstName, string lastName)
+        public async Task<List<User>> GetAllAsync(int? id, string? firstName, string? lastName)
         {
             IQueryable<User> _users = _context.Set<User>()
                 .Where(_user => id != 0 ? _user.Id == id : true)
@@ -51,7 +51,7 @@ namespace PocDDD.Infra.Data.Repositories
             return users;
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<User> GetByIdAsync(int id)
         {
            User user = await _context.Users.FirstOrDefaultAsync(_user => _user.Id == id);
             return user;
