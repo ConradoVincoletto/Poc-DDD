@@ -9,5 +9,6 @@ namespace PocDDD.Domain.Interfaces
         Task<List<User>> GetAllAsync(int? id, string? firstName, string? lastName);
         Task<User> GetByIdAsync(int id);
         Task<bool> DeleteAsync(User user);
+        Task<User> GetByEmailAsync(string email);
     }
 }

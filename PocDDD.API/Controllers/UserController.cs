@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PocDDD.Application.DTOs;
 using PocDDD.Application.Filters;
 using PocDDD.Application.Interfaces;
 
 namespace PocDDD.API.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
+    
+    
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;

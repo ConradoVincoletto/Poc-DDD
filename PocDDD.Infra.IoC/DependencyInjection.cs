@@ -12,8 +12,10 @@ namespace PocDDD.Infra.IoC
         public static IServiceCollection AddInsfraStructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddScoped<IUserRespository, UserRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
 
             return services;
         }

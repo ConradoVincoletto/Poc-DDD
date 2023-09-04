@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using PocDDD.Application.DTOs;
 using PocDDD.Application.Filters;
 using PocDDD.Application.Interfaces;
 using PocDDD.Domain.Entities;
 using PocDDD.Domain.Interfaces;
 using PocDDD.Domain.Validation;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
+using System.Text;
 
 namespace PocDDD.Application.Services
 {
@@ -13,11 +18,13 @@ namespace PocDDD.Application.Services
     {
         private readonly IUserRespository _userRespository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IUserRespository userRespository, IMapper mapper)
+        public UserService(IUserRespository userRespository, IMapper mapper, IConfiguration configuration)
         {
             _userRespository = userRespository;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public async Task<ServiceResponseDTO<int>> InsertAsync(UserToInsertDTO userToInsertModel)
@@ -25,10 +32,15 @@ namespace PocDDD.Application.Services
             ServiceResponseDTO<int> serviceResponseDTO = new ServiceResponseDTO<int>();
             try
             {
-                User user = _mapper.Map<UserToInsertDTO, User>(userToInsertModel);
+                User user = new User(true,
+                                    userToInsertModel.FirstName,
+                                    userToInsertModel.LastName,
+                                    userToInsertModel.Email, 
+                                    userToInsertModel.Password);
+
                 user = await _userRespository.InsertAsync(user);
                 serviceResponseDTO.StatusCode = HttpStatusCode.Created;
-                serviceResponseDTO.Data = user.Id;
+                serviceResponseDTO.Data = user.UserId;
             }
             catch (Exception ex)
             {
@@ -90,7 +102,7 @@ namespace PocDDD.Application.Services
             try
             {
                 User user = await _userRespository.GetByIdAsync(id);
-                if (user == null || user.Id == 0)
+                if (user == null || user.UserId == 0)
                 {
                     serviceResponseDTO = new ServiceResponseDTO<UserDTO>(HttpStatusCode.NotFound);
                 }
@@ -122,9 +134,60 @@ namespace PocDDD.Application.Services
             return serviceResponseDTO;
         }
 
-        public Task<ServiceResponseDTO<string>> LoginAsync(UserLoginDTO userLoginDTO)
+        public async Task<ServiceResponseDTO<string>> LoginAsync(UserLoginDTO userLoginDTO)
         {
-            throw new NotImplementedException();
+            ServiceResponseDTO<string> serviceResponseDTO = new ServiceResponseDTO<string>();
+            try
+            {
+                User user = await _userRespository.GetByEmailAsync(userLoginDTO.Email);
+                if (user == null || user.UserId == 0)
+                {
+                    serviceResponseDTO.IsSuccess = false;
+                    serviceResponseDTO.Message = "Usuário não encontrado";
+                    serviceResponseDTO.StatusCode = HttpStatusCode.Unauthorized;
+                    return serviceResponseDTO;
+                }
+                else if (!user.CheckHash(userLoginDTO.Password, user.PasswordHash, user.PasswordSalt))
+                {
+                    serviceResponseDTO.IsSuccess = false;
+                    serviceResponseDTO.Message = "Senha inválida";
+                    serviceResponseDTO.StatusCode = HttpStatusCode.Unauthorized;
+                    return serviceResponseDTO;
+                }
+                string token = CreateToken(user);
+                serviceResponseDTO.Data = token;
+            }
+            catch (Exception ex)
+            {
+                serviceResponseDTO = new ServiceResponseDTO<string>(ex);
+            }
+            return serviceResponseDTO;
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Role, "Admin1"),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Email)
+            };
+
+            SymmetricSecurityKey symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+                (_configuration.GetSection("AppSettings:Token").Value));
+            SigningCredentials signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+            SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(7),
+                SigningCredentials = signingCredentials
+            };
+
+            JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
+
+            return jwtSecurityTokenHandler.WriteToken(securityToken);
         }
     }
 }
