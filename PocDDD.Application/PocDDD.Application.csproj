@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PocDDD.Domain\PocDDD.Domain.csproj" />
+    <ProjectReference Include="..\PocDDD.Infra.Data\PocDDD.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>

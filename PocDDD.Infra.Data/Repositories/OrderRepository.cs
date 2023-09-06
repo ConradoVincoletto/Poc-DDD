@@ -1,11 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PocDDD.Domain.Entities;
+using PocDDD.Domain.Interfaces;
 using PocDDD.Infra.Data.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PocDDD.Infra.Data.Repositories
 {

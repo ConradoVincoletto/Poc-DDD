@@ -4,6 +4,7 @@ using PocDDD.Application.Interfaces;
 using PocDDD.Application.Services;
 using PocDDD.Domain.Interfaces;
 using PocDDD.Infra.Data.Repositories;
+using PocDDD.Infra.Data.UnitOfWork;
 
 namespace PocDDD.Infra.IoC
 {
@@ -16,6 +17,8 @@ namespace PocDDD.Infra.IoC
 
             services.AddScoped<IUserRespository, UserRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }

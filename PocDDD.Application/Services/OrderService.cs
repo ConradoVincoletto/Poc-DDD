@@ -11,11 +11,13 @@ namespace PocDDD.Application.Services
     {
         private readonly IOrderRepository _orderRespository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public OrderService(IOrderRepository orderRepository, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _orderRespository = orderRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public Task<ServiceResponseDTO<bool>> DeleteAsync(int id)
@@ -44,12 +46,20 @@ namespace PocDDD.Application.Services
                                     orderDTO.TotalPrice);
 
                 order = await _orderRespository.InsertAsync(order);
+                throw new Exception("Contexto de transação");
+
+                order = await _orderRespository.InsertAsync(order);
                 serviceResponseDTO.StatusCode = HttpStatusCode.Created;
                 serviceResponseDTO.Data = order.OrderId;
             }
             catch (Exception ex)
             {
                 serviceResponseDTO = new ServiceResponseDTO<int>(ex);
+                await _unitOfWork.RollbackAscync();
+            }
+            finally
+            {
+                await _unitOfWork.CommitAsync();
             }
             return serviceResponseDTO;
         }

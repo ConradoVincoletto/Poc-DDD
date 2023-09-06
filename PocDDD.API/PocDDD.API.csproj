@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PocDDD.Application\PocDDD.Application.csproj" />
     <ProjectReference Include="..\PocDDD.Infra.Data\PocDDD.Infra.Data.csproj" />
+    <ProjectReference Include="..\PocDDD.Infra.IoC\PocDDD.Infra.IoC.csproj" />
   </ItemGroup>
 
 </Project>

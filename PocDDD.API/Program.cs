@@ -8,6 +8,7 @@ using PocDDD.Application.Services;
 using PocDDD.Domain.Interfaces;
 using PocDDD.Infra.Data.Context;
 using PocDDD.Infra.Data.Repositories;
+using PocDDD.Infra.IoC;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRespository, UserRepository>();
+builder.Services.AddInsfraStructure(builder.Configuration);
 
 builder.Services.AddDbContext<AppDbContext>
     (x => x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -36,7 +36,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
             .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
         ValidateIssuer = false,
         ValidateAudience = false
-    };    
+    };     
 
 });
 
