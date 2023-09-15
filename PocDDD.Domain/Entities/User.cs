@@ -80,5 +80,7 @@ namespace PocDDD.Domain.Entities
         public byte[] PasswordHash { get; private set; }
         public byte[] PasswordSalt { get; set; }
         public virtual List<Order> Orders { get; private set; }
+        public string AutomaticMigrationTest { get; private set; }
+        public string AutomaticMigrationTest2 { get; private set; }
     }
 }
