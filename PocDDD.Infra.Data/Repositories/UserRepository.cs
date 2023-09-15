@@ -40,9 +40,10 @@ namespace PocDDD.Infra.Data.Repositories
         public async Task<List<User>> GetAllAsync(int? id, string? firstName, string? lastName)
         {
             IQueryable<User> _users = _context.Set<User>()
-                .Where(_user => id != 0 ? _user.UserId == id : true)
+                .Where(_user => (id != null && id != 0) ? _user.UserId == id : true)
                 .Where(_user => !string.IsNullOrWhiteSpace(firstName) ? _user.FirstName.Contains(firstName) : true)
-                .Where(_user => !string.IsNullOrWhiteSpace(lastName) ? _user.LastName.Contains(lastName) : true);
+                .Where(_user => !string.IsNullOrWhiteSpace(lastName) ? _user.LastName.Contains(lastName) : true)
+                .Include(x => x.Orders).AsNoTracking();
                 
 
             List<User> users = await _users
@@ -54,7 +55,10 @@ namespace PocDDD.Infra.Data.Repositories
 
         public async Task<User> GetByIdAsync(int id)
         {
-           User user = await _context.Users.FirstOrDefaultAsync(_user => _user.UserId == id);
+            User user = await _context.Users
+                .Include(x => x.Orders)
+                .FirstOrDefaultAsync(_user => _user.UserId == id);
+                
             return user;
         }
 

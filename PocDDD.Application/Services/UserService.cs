@@ -87,6 +87,7 @@ namespace PocDDD.Application.Services
                 else
                 {
                     serviceResponseDTO.Data = userDTOs;
+                    serviceResponseDTO.StatusCode = HttpStatusCode.OK;
                 }
             }
             catch (Exception ex)
